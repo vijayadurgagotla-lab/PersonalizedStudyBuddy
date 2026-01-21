@@ -1,0 +1,40 @@
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
+
+# Initialize Groq LLM
+llm = ChatGroq(
+    model_name="llama-3.3-70b-versatile",
+    temperature=0.7
+)
+explain_template = ChatPromptTemplate.from_messages([
+    ("system", "You are a helpful study assistant."),
+    ("user", "Explain the topic '{topic}' in simple terms.So that people can understand easily")
+])
+quiz_template = ChatPromptTemplate.from_messages([
+    ("system", "You are a quiz master."),
+    ("user", "Create a quiz on the topic '{topic}' with 5 multiple-choice questions.Include options A, B, C, D.Not to provide answers")
+])
+def explain_topic(topic):
+    prompt = explain_template.format_messages(topic=topic)
+    explanation = llm.invoke(prompt)
+    return explanation.content
+
+def generate_quiz(topic):
+    prompt = quiz_template.format_messages(topic=topic)
+    quiz = llm.invoke(prompt)
+    return quiz.content
+def study_buddy():
+    print("Welcome to your Personalized Study Buddy!")
+    topic = input("Enter the topic you want to learn: ")
+    
+    explanation = explain_topic(topic)
+    print("\n--- Explanation ---")
+    print(explanation)
+    
+    quiz = generate_quiz(topic)
+    print("\n--- Quiz ---")
+    print(quiz)
+
+if __name__ == "__main__":
+    study_buddy()
